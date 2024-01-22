@@ -1,16 +1,25 @@
+window.administrate_field_jsonb_editors = {};
+
 (function () {
   eventName = 'ready'
   if (typeof TurboLinks !== 'undefined') eventName = 'turbolinks:load'
   if (typeof Turbo !== 'undefined') eventName = 'turbo:load'
 
   $(document).on(eventName, function () {
-    let editor, updatedJson;
     $('.administrate-jsoneditor').each(function (index) {
-
       let $current = $(this).find("textarea");
+      const id = $current.attr("id")
+
+      if (administrate_field_jsonb_editors[id]) {
+        administrate_field_jsonb_editors[id].destroy();
+      }
 
       let options = {
         onChange: function () {
+          let updatedJson;
+
+          const editor = administrate_field_jsonb_editors[id]
+
           try {
             updatedJson = editor.get();
           } catch (err) {
@@ -30,7 +39,8 @@
         modes: ['text', 'tree'],
       };
 
-      let editor = new JSONEditor(this, options);
+      const editor = new JSONEditor(this, options);
+      administrate_field_jsonb_editors[id] = editor
 
       editor.set(JSON.parse($current.val()));
     });
